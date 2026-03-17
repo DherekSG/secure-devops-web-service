@@ -10,7 +10,7 @@ start_time = time.time()
 def home():
     return {
         "project": "Secure DevOps Web Service - CI/CD WORKING",
-        "status": "CI/CD OK - Atualizado",
+        "status": "CI/CD OK - Deploy automatico funcionando",
         "server": socket.gethostname()
     }
 
