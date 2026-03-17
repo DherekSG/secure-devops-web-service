@@ -1,11 +1,11 @@
-name: CI - Secure DevOps Service
+name: CI/CD - Secure DevOps Service
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build:
+  deploy:
 
     runs-on: ubuntu-latest
 
@@ -14,22 +14,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Deploy to VM via SSH
+      uses: appleboy/ssh-action@v1.0.3
       with:
-        python-version: "3.11"
-
-    - name: Install dependencies
-      run: |
-        pip install -r app/requirements.txt
-
-    - name: Test FastAPI app
-      run: |
-        python -c "import main"
-      working-directory: app
-
-    - name: Build Docker image
-      run: |
-        docker build -t secure-devops-service .
-
-
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ~/secure-devops-service
+          git fetch --all
+          git reset --hard origin/main
+          docker compose down
+          docker compose up -d --build
