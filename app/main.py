@@ -9,7 +9,7 @@ start_time = time.time()
 @app.get("/")
 def home():
     return {
-        "project": "Secure DevOps Web Service",
+        "project": "Secure DevOps Web Service - CI/CD WORKING",
         "status": "running",
         "server": socket.gethostname()
     }
