@@ -1,237 +1,258 @@
-# 🚀 Secure DevOps Web Service
+
+# 🚀 Secure DevOps Web Service (Production-Ready DevSecOps Project)
 
 ## 📌 Visão Geral
-Este projeto demonstra a implementação completa de um ambiente **DevOps + DevSecOps**, com foco em automação, segurança e boas práticas de infraestrutura.
 
-A solução simula um ambiente real de produção, incluindo:
-- Deploy em cloud
-- Pipeline CI/CD
-- Containerização
-- Reverse proxy
-- Hardening de servidor
-- Monitoramento
-
----
-
-## 🎯 Objetivo do Projeto
-
-O objetivo deste projeto é demonstrar na prática:
+Este projeto demonstra a construção de um ambiente completo de **DevOps + DevSecOps**, simulando um cenário real de produção com foco em:
 
 - Automação de deploy (CI/CD)
-- Uso de containers (Docker)
-- Configuração de infraestrutura em cloud
-- Aplicação de boas práticas de segurança
-- Monitoramento e observabilidade
+- Infraestrutura em cloud (Google Cloud)
+- Containerização (Docker)
+- Proxy Reverso com NGINX
+- Segurança aplicada (hardening + proteção)
+- Observabilidade e monitoramento
+- HTTPS com certificado válido (Let's Encrypt)
 
-Este projeto foi desenvolvido como portfólio para atuação em áreas como:
-- DevOps
-- Cloud Engineer
-- Segurança da Informação (Blue Team / SOC)
+🔴 Diferencial: este projeto não é apenas conceitual — ele está **rodando em produção com acesso público e pipeline ativo**.
 
 ---
 
-## 🧱 Arquitetura do Sistema
+## 🌐 Acesso ao Ambiente (Live Demo)
+
+🔗 Aplicação (HTTPS):  
+https://dherekdevops.ddns.net
+
+🔗 Status da API:  
+https://dherekdevops.ddns.net/status
+
+🔗 Health Check:  
+https://dherekdevops.ddns.net/health
+
+📊 Monitoramento (Netdata):  
+http://dherekdevops.ddns.net:19999
+
+---
+
+## 🧠 Objetivo Técnico
+
+Demonstrar capacidade prática em:
+
+- Construção de infraestrutura cloud
+- Deploy automatizado sem intervenção manual
+- Segurança aplicada em ambiente Linux
+- Troubleshooting de problemas reais
+- Integração entre múltiplas tecnologias
+
+---
+
+## 🏗️ Arquitetura do Sistema
 
 ```
-[ Usuário ]
-     ↓
-[ NGINX (porta 80) ]
-     ↓
-[ FastAPI (porta 8000 - interno) ]
-     ↓
+[ Usuário / Internet ]
+        ↓
+[ DNS (No-IP) ]
+        ↓
+[ NGINX (Reverse Proxy + HTTPS TLS 1.3) ]
+        ↓
+[ FastAPI Backend (porta interna 8000) ]
+        ↓
 [ Docker Containers ]
-     ↓
-[ VM - Google Cloud ]
+        ↓
+[ VM Linux - Google Cloud ]
 ```
-
-### Componentes:
-
-- **NGINX:** Atua como proxy reverso
-- **FastAPI:** Backend da aplicação
-- **Docker:** Isolamento e execução dos serviços
-- **GitHub Actions:** Pipeline CI/CD
-- **VM (Google Cloud):** Infraestrutura
 
 ---
 
-## ⚙️ Pipeline CI/CD (Detalhado)
+## 🌐 NGINX (Reverse Proxy)
 
-### Fluxo:
+O NGINX atua como **proxy reverso central da aplicação**, sendo responsável por:
 
-1. Desenvolvedor realiza `git push`
-2. GitHub Actions é acionado automaticamente
-3. Runner cria ambiente temporário
-4. Pipeline executa:
-   - Checkout do código
-   - Configuração do SSH
-   - Conexão com a VM
-5. Na VM:
-   - Atualiza repositório (`git pull`)
-   - Derruba containers antigos
-   - Reconstrói containers
-   - Sobe nova versão automaticamente
+- Receber requisições externas (HTTP/HTTPS)
+- Encaminhar tráfego para o backend (FastAPI)
+- Ocultar portas internas (ex: 8000)
+- Realizar terminação SSL (HTTPS)
+- Redirecionar HTTP → HTTPS
 
-### Tecnologias usadas:
+### Benefícios implementados:
 
-- GitHub Actions
-- SSH automatizado
+- 🔐 Aumento da segurança (backend não exposto)
+- 🌐 Abstração da aplicação
+- ⚡ Melhor controle de tráfego
+- 🔒 Base para HTTPS e TLS
+
+
+---
+
+## ⚙️ Stack Tecnológica
+
+### Cloud & Infraestrutura
+- Google Cloud Platform (Compute Engine)
+- Linux (Ubuntu)
+
+### Containerização
+- Docker
 - Docker Compose
 
+### Backend
+- FastAPI (Python)
+
+### Proxy / Web Server
+- NGINX (Reverse Proxy + SSL)
+
+### CI/CD
+- GitHub Actions
+- Deploy via SSH automatizado
+
+### Segurança
+- UFW (Firewall)
+- Fail2Ban
+- Hardening SSH
+
+### Monitoramento
+- Netdata
+
+### DNS & HTTPS
+- No-IP (DNS dinâmico)
+- Let's Encrypt (Certbot)
+
 ---
 
-## 🐳 Containerização (Docker)
+## 🔁 Pipeline CI/CD (Fluxo Real)
 
-### Serviços:
+1. Push no repositório GitHub
+2. GitHub Actions executa workflow
+3. Pipeline autentica via SSH
+4. Atualiza código na VM
+5. Derruba containers antigos
+6. Rebuild das imagens Docker
+7. Deploy automático em produção
 
-- **fastapi-app** → API principal
-- **nginx-proxy** → Proxy reverso
-- **netdata** → Monitoramento
+✔ Zero intervenção manual  
+✔ Deploy contínuo real  
 
-### Benefícios aplicados:
+---
 
+## 🐳 Containerização
+
+| Container | Função |
+|----------|--------|
+| api | Backend FastAPI |
+| nginx | Proxy reverso + HTTPS |
+| netdata | Monitoramento |
+
+Benefícios aplicados:
 - Isolamento de serviços
-- Reprodutibilidade do ambiente
-- Facilidade de deploy
+- Reprodutibilidade
+- Escalabilidade base
 
 ---
 
-## 🌐 NGINX (Proxy Reverso)
+## 🔐 Segurança Implementada
 
-Funções implementadas:
+### Firewall (Camada dupla)
+- UFW (Linux)
+- Regras de firewall no GCP
 
-- Receber requisições externas (porta 80)
-- Redirecionar para aplicação interna
-- Ocultar a porta interna da API
+### Proteções
+- SSH apenas por chave (sem senha)
+- Root login desativado
+- Fail2Ban (proteção contra brute-force)
 
-### Benefícios:
-
-- Segurança
-- Abstração da aplicação
-- Base para HTTPS
-
----
-
-## 🔐 Segurança (DevSecOps)
-
-### 🔹 Firewall (UFW)
-
-Portas liberadas:
-
-- 22 → SSH
-- 80 → HTTP
-- 443 → HTTPS (preparado)
-- 19999 → Monitoramento
-
-Porta interna protegida:
-
-- 8000 → API (não exposta)
+### Rede
+- Porta 8000 isolada (acesso interno apenas)
+- Exposição controlada (80, 443, 22)
 
 ---
 
-### 🔹 Fail2Ban
+## 🔒 HTTPS (TLS)
 
-- Proteção contra ataques de força bruta
-- Bloqueio automático após tentativas falhas
-- Monitoramento de logs do SSH
-
----
-
-### 🔹 Hardening SSH
-
-- Login root desativado
-- Autenticação por senha desativada
-- Apenas autenticação via chave SSH
+- Certificado emitido com Let's Encrypt
+- TLS 1.3 ativo
+- Redirecionamento automático HTTP → HTTPS
+- Integração com NGINX em ambiente Docker
 
 ---
 
-## 📊 Monitoramento e Observabilidade
+## 📊 Observabilidade
 
 ### Netdata
+Monitoramento em tempo real:
 
-- Monitoramento em tempo real
-- Métricas:
-  - CPU
-  - Memória
-  - Rede
-  - Processos
+- CPU
+- Memória
+- Rede
+- Containers
 
 ### Logs
 
-#### Docker
-```bash
+Docker:
+```
 docker logs -f fastapi-app
 ```
 
-#### Sistema
-```bash
-sudo journalctl -u ssh
+Sistema:
+```
+journalctl -u ssh
 ```
 
-#### Fail2Ban
-```bash
-sudo fail2ban-client status sshd
+Fail2Ban:
 ```
-
----
-
-## 🌐 Endpoints da Aplicação
-
-- `/` → Status geral
-- `/health` → Health check
-- `/status` → Informações da aplicação
-
----
-
-## 🧪 Testes
-
-```bash
-curl http://35.223.41.229
-curl http://35.223.41.229/health
-curl http://35.223.41.229/status
+fail2ban-client status sshd
 ```
 
 ---
 
-## 📈 Principais Conceitos Demonstrados
+## 🧪 Testes Realizados
 
-- CI/CD na prática
-- Deploy automatizado em cloud
-- Arquitetura com containers
-- Reverse proxy com NGINX
-- Segurança em ambiente Linux
-- Monitoramento de aplicação
-- Logs e observabilidade
+- Deploy automático validado
+- Teste de falha (container parado → recovery via CI/CD)
+- Validação HTTPS
+- Testes de firewall
+- Testes de endpoints
+- Debug de problemas reais (NGINX, SSL, Docker, rede)
 
 ---
 
-## 🚀 Melhorias Futuras
+## 💡 Desafios Técnicos Resolvidos
 
-- Implementação de HTTPS (Let's Encrypt)
-- Integração com SIEM (Wazuh + ELK)
-- Sistema de alertas
-- Deploy sem downtime
-- Automação com Terraform
+- Conflito de portas (Docker vs NGINX)
+- Integração SSL em ambiente containerizado
+- Firewall em múltiplas camadas (UFW + GCP)
+- Problemas de configuração do NGINX
+- Debug de pipeline CI/CD
+- Troubleshooting em ambiente Linux real
+
+---
+
+## 📈 Diferenciais do Projeto
+
+✔ Ambiente rodando em produção  
+✔ CI/CD real funcional  
+✔ HTTPS válido com domínio  
+✔ Segurança aplicada  
+✔ Monitoramento ativo  
+✔ Troubleshooting real realizado  
 
 ---
 
 ## 👨‍💻 Autor
 
-Dherek S
-
+Dherek Schaberle  
 DevOps | Cloud | Segurança da Informação
 
 ---
 
-## ⭐ Considerações
+## ⭐ Considerações Finais
 
-Este projeto simula um ambiente próximo ao de produção, demonstrando habilidades práticas em:
+Este projeto demonstra capacidade prática de:
 
-- Infraestrutura
-- Automação
-- Segurança
-- Observabilidade
+- Construção de ambientes reais
+- Automação de deploy
+- Implementação de segurança
+- Resolução de problemas em produção
 
-Focado em evolução para áreas de:
+Focado em atuação nas áreas de:
+
 - DevOps
 - Cloud Engineering
-- Cybersecurity (Blue Team)
+- Cybersecurity (Blue Team / SOC)
